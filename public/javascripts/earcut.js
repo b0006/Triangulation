@@ -3,6 +3,26 @@
 module.exports = earcut;
 module.exports.default = earcut;
 
+// алгоритм сортировки пузырьком
+function sortBubble(data) {
+    var tmp;
+    for (var i = data.length - 1; i > 0; i--) {
+        var counter=0;
+        for (var j = 0; j < i; j++) {
+            if (data[j] > data[j+1]) {
+                tmp = data[j];
+                data[j] = data[j+1];
+                data[j+1] = tmp;
+                counter++;
+            }
+        }
+        if(counter==0){
+            break;
+        }
+    }
+    return data;
+};
+
 function earcut(data, holeIndices, dim) {
 
     dim = dim || 2;
@@ -38,6 +58,10 @@ function earcut(data, holeIndices, dim) {
     }
 
     earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
+
+    // сортируем массив из значений площадей
+    arraySquare = sortBubble(arraySquare);
+    console.log(arraySquare);
 
     return triangles;
 }
@@ -456,8 +480,22 @@ function getLeftmost(start) {
     return leftmost;
 }
 
+// площадь треугольника
+function squareTriangle(x1, y1, x2, y2, x3, y3)
+{
+    var points = [(x1 - x3), (x2 - x3), (y1 - y3), (y2 - y3)];
+    var result = (points[0] * points[3]) - (points[1] * points[2]);
+    result = result / 2;
+
+    return result;
+}
+var arraySquare = [];
 // check if a point lies within a convex triangle
 function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
+
+    // запоминаем значения площадей треугольника
+    arraySquare.push(squareTriangle(ax, ay, bx, by, cx, cy));
+
     return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
         (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
         (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
