@@ -84,31 +84,29 @@ function earcut(data, holeIndices, dim) {
 
     earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
 
-    for(var i in arraySquare){
+    //console.log(arraySquare);
+
+    /*for(var i in arraySquare){
         console.log(arraySquare[i][0]["square"]);
-    }
+    }*/
 
-    console.log("dfdf");
+    //console.log("dfdf");
 
-    arraySquare = arraySquare.sort(function (a, b) {
-        //если результат <0 то b должен быть впереди a
+    // сортируем массив по убыванию
+    arraySquare = arraySquare.sort(function (b, a) {
         return (a[0].square - b[0].square)
     });
 
-    for(var i in arraySquare){
-        console.log(arraySquare[i][0]["square"]);
+    for(var i = 0; i < 10; i++){
+        console.log("X = " + arraySquare[i][0]["centerX"] + "\n");
+        console.log("Y = " + arraySquare[i][0]["centerY"] + "\n\n");
     }
 
+    /*for(var i in arraySquare){
+        console.log(arraySquare[i][0]["square"]);
+    }*/
 
     return triangles;
-}
-
-function compare(a,b) {
-    if (a.square < b.square)
-        return -1;
-    if (a.square > b.square)
-        return 1;
-    return 0;
 }
 
 // create a circular doubly linked list from polygon points in the specified winding order
