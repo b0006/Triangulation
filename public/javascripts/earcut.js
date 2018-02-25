@@ -12,63 +12,36 @@ var arraySquare = [];
 
 function getCenter(x1, y1, x2, y2, x3, y3)
 {
-    //считаем площадь
+    // считаем площадь текущего треугольника
     var points = [(x1 - x3), (x2 - x3), (y1 - y3), (y2 - y3)];
-    var result = [];
+    var square = parseInt( ((points[0] * points[3]) - (points[1] * points[2])) / 2);
 
-    // округляем до целого (погрещность возможна)
-    //result[0]["square"] = parseInt(result[0]["square"] / 2);
-    //console.log(result);
-
+    // находим центр тяжести текущего треугольника
     var mediumX = parseInt((x1 + x2 + x3) / 3);
     var mediumY = parseInt((y1 + y2 + y3) / 3);
 
-    //var center = [mediumX, mediumY];
+    // формируем ассоциативный массив
+    var sizeArraySquare = arraySquare.length;
 
-    //result = [{"x" : mediumX, "y" : mediumY}];
-    result = [{"square" : parseInt( ((points[0] * points[3]) - (points[1] * points[2])) / 2), "centerX" : mediumX, "centerY" : mediumY}];
-    console.log(result);
-
-    return result;
-}
-
-// площадь треугольника
-function squareTriangle(x1, y1, x2, y2, x3, y3)
-{
-    var points = [(x1 - x3), (x2 - x3), (y1 - y3), (y2 - y3)];
-    var result = (points[0] * points[3]) - (points[1] * points[2]);
-
-    // округляем до целого (погрещность возможна)
-    result = parseInt(result / 2);
-
-    console.log(result);
-    console.log(getCenterTriangle(x1, y1, x2, y2, x3, y3));
-
-    return result;
-}
-
-function getCenterTriangle(x1, y1, x2, y2, x3, y3)
-{
-    var mediumX = parseInt((x1 + x2 + x3) / 3);
-    var mediumY = parseInt((y1 + y2 + y3) / 3);
-
-    var center = [mediumX, mediumY];
-    return center;
-}
-
-function getUniqie (arg) {
-    var result = [];
-    var obj = {}
-
-    for(var i = 0; i < arg.length; i++) {
-        obj[arg[i]] = arg[i];
+    if(sizeArraySquare == 0){
+        arraySquare.push([{
+            "square" : square,
+            "centerX" : mediumX,
+            "centerY" : mediumY
+        }]);
     }
-
-    for(var i in obj) {
-        result.push(obj[i])
+    else if(sizeArraySquare > 0)
+    {
+        // могут попасться дубликаты. Их не добавляем
+        // sizeArraySquare - как размер массива (играет роль индекса)
+        if(arraySquare[sizeArraySquare - 1][0]["square"] != square){
+            arraySquare.push([{
+                "square" : square,
+                "centerX" : mediumX,
+                "centerY" : mediumY
+            }]);
+        }
     }
-
-    return result;
 }
 
 // ---------------------------------
@@ -111,10 +84,31 @@ function earcut(data, holeIndices, dim) {
 
     earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
 
-    //arraySquare = getUniqie(arraySquare);
-    //console.log(arraySquare[0][0].square);
+    for(var i in arraySquare){
+        console.log(arraySquare[i][0]["square"]);
+    }
+
+    console.log("dfdf");
+
+    arraySquare = arraySquare.sort(function (a, b) {
+        //если результат <0 то b должен быть впереди a
+        return (a[0].square - b[0].square)
+    });
+
+    for(var i in arraySquare){
+        console.log(arraySquare[i][0]["square"]);
+    }
+
 
     return triangles;
+}
+
+function compare(a,b) {
+    if (a.square < b.square)
+        return -1;
+    if (a.square > b.square)
+        return 1;
+    return 0;
 }
 
 // create a circular doubly linked list from polygon points in the specified winding order
@@ -534,7 +528,7 @@ function getLeftmost(start) {
 // check if a point lies within a convex triangle
 function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
 
-    arraySquare.push(getCenter(ax, ay, bx, by, cx, cy));
+    getCenter(ax, ay, bx, by, cx, cy);
 
     return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
         (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
