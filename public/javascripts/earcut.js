@@ -3,25 +3,77 @@
 module.exports = earcut;
 module.exports.default = earcut;
 
-// алгоритм сортировки пузырьком
-function sortBubble(data) {
-    var tmp;
-    for (var i = data.length - 1; i > 0; i--) {
-        var counter=0;
-        for (var j = 0; j < i; j++) {
-            if (data[j] > data[j+1]) {
-                tmp = data[j];
-                data[j] = data[j+1];
-                data[j+1] = tmp;
-                counter++;
-            }
-        }
-        if(counter==0){
-            break;
-        }
+// ---------------------------------
+//
+// ---------------------------------
+
+// глобальная переменная
+var arraySquare = [];
+
+function getCenter(x1, y1, x2, y2, x3, y3)
+{
+    //считаем площадь
+    var points = [(x1 - x3), (x2 - x3), (y1 - y3), (y2 - y3)];
+    var result = [];
+
+    // округляем до целого (погрещность возможна)
+    //result[0]["square"] = parseInt(result[0]["square"] / 2);
+    //console.log(result);
+
+    var mediumX = parseInt((x1 + x2 + x3) / 3);
+    var mediumY = parseInt((y1 + y2 + y3) / 3);
+
+    //var center = [mediumX, mediumY];
+
+    //result = [{"x" : mediumX, "y" : mediumY}];
+    result = [{"square" : parseInt( ((points[0] * points[3]) - (points[1] * points[2])) / 2), "centerX" : mediumX, "centerY" : mediumY}];
+    console.log(result);
+
+    return result;
+}
+
+// площадь треугольника
+function squareTriangle(x1, y1, x2, y2, x3, y3)
+{
+    var points = [(x1 - x3), (x2 - x3), (y1 - y3), (y2 - y3)];
+    var result = (points[0] * points[3]) - (points[1] * points[2]);
+
+    // округляем до целого (погрещность возможна)
+    result = parseInt(result / 2);
+
+    console.log(result);
+    console.log(getCenterTriangle(x1, y1, x2, y2, x3, y3));
+
+    return result;
+}
+
+function getCenterTriangle(x1, y1, x2, y2, x3, y3)
+{
+    var mediumX = parseInt((x1 + x2 + x3) / 3);
+    var mediumY = parseInt((y1 + y2 + y3) / 3);
+
+    var center = [mediumX, mediumY];
+    return center;
+}
+
+function getUniqie (arg) {
+    var result = [];
+    var obj = {}
+
+    for(var i = 0; i < arg.length; i++) {
+        obj[arg[i]] = arg[i];
     }
-    return data;
-};
+
+    for(var i in obj) {
+        result.push(obj[i])
+    }
+
+    return result;
+}
+
+// ---------------------------------
+//
+// ---------------------------------
 
 function earcut(data, holeIndices, dim) {
 
@@ -59,9 +111,8 @@ function earcut(data, holeIndices, dim) {
 
     earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
 
-    // сортируем массив из значений площадей
-    arraySquare = sortBubble(arraySquare);
-    console.log(arraySquare);
+    //arraySquare = getUniqie(arraySquare);
+    //console.log(arraySquare[0][0].square);
 
     return triangles;
 }
@@ -480,21 +531,10 @@ function getLeftmost(start) {
     return leftmost;
 }
 
-// площадь треугольника
-function squareTriangle(x1, y1, x2, y2, x3, y3)
-{
-    var points = [(x1 - x3), (x2 - x3), (y1 - y3), (y2 - y3)];
-    var result = (points[0] * points[3]) - (points[1] * points[2]);
-    result = result / 2;
-
-    return result;
-}
-var arraySquare = [];
 // check if a point lies within a convex triangle
 function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
 
-    // запоминаем значения площадей треугольника
-    arraySquare.push(squareTriangle(ax, ay, bx, by, cx, cy));
+    arraySquare.push(getCenter(ax, ay, bx, by, cx, cy));
 
     return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
         (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
