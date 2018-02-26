@@ -101,6 +101,50 @@ var testPoints = [
     ]
 ];
 
+/*****
+ * Принадлежность точки полигону
+ * @type {Array}
+ */
+
+var xp = [];
+var yp = [];
+
+for(var i = 0; i < testPoints.length; i++)
+{
+    for(var j = 0; j < testPoints[0].length; j++) {
+        xp[j] = testPoints[i][j][0];
+        yp[j] = testPoints[i][j][1];
+    }
+}
+
+
+
+var x = 2156;
+var y = 3359;
+
+//var xp = new Array(-73,-33,7,-33); // Массив X-координат полигона
+//var yp = new Array(-85,-126,-85,-45); // Массив Y-координат полигона
+function inPoly(x,y){
+    var npol = xp.length;
+    var j = npol - 1;
+    var c = 0;
+    for (i = 0; i < npol;i++){
+        if ((((yp[i]<=y) && (y<yp[j])) || ((yp[j]<=y) && (y<yp[i]))) &&
+            (x > (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i])) {
+            c = !c
+        }
+        j = i;
+    }
+    return c;
+}
+console.log(inPoly(x,y));
+
+/*****
+ * Конец блока принадлежности
+ * @type {HTMLElement | null}
+ */
+
+
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
